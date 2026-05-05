@@ -1,4 +1,5 @@
-from decorator import *
+from decorator import Component
+from decorator import ConcreteComponent, ConcreteDecoratorA, ConcreteDecoratorB, ConcreteDecoratorC
 # здесь будет вызов кода из модуля decorator.py
 
 # Клиентский код – использует компонент без знания о наличии/отсутствии декораторов
