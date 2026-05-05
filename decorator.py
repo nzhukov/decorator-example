@@ -1,0 +1,71 @@
+from abc import ABC, abstractmethod
+
+# 1. Абстрактный компонент – интерфейс, общий для всех декорируемых объектов
+class Component(ABC):
+    @abstractmethod
+    def operation(self) -> str:
+        pass
+
+# 2. Конкретный компонент – исходный объект, который мы будем декорировать
+class ConcreteComponent(Component):
+    def operation(self) -> str:
+        # Базовое поведение (очень простое, без логики)
+        return "BaseOperation"
+
+# 3. Абстрактный декоратор – содержит ссылку на компонент и делегирует ему вызов
+class Decorator(Component):
+    def __init__(self, component: Component):
+        self._component = component  # Обёрнутый объект
+
+    def operation(self) -> str:
+        # Делегирование базовому компоненту (может быть переопределено в наследниках)
+        return self._component.operation()
+
+# 4. Конкретный декоратор A – добавляет поведение ДО вызова базовой операции
+class ConcreteDecoratorA(Decorator):
+    def operation(self) -> str:
+        # Добавляем "обёртку" с одной стороны
+        return f"DecoratorA({self._component.operation()})"
+
+# 5. Конкретный декоратор B – добавляет поведение ПОСЛЕ вызова базовой операции
+class ConcreteDecoratorB(Decorator):
+    def operation(self) -> str:
+        # Можно добавить логику до, после или вокруг вызова
+        # Здесь добавим только после
+        return f"{self._component.operation()}[DecoratorB]"
+
+# 6. Конкретный декоратор C – комбинирует добавления с обеих сторон
+class ConcreteDecoratorC(Decorator):
+    def operation(self) -> str:
+        # Добавляем и префикс, и суффикс
+        return f"Pre_{self._component.operation()}_Post"
+
+# Клиентский код – использует компонент без знания о наличии/отсутствии декораторов
+def client_code(component: Component) -> None:
+    print(f"Результат: {component.operation()}")
+
+if __name__ == "__main__":
+    # Создаём базовый компонент
+    simple = ConcreteComponent()
+    print("1. Базовый компонент:")
+    client_code(simple)
+
+    # Декорируем его декоратором A
+    decorator_a = ConcreteDecoratorA(simple)
+    print("\n2. Компонент, обёрнутый в DecoratorA:")
+    client_code(decorator_a)
+
+    # Декорируем декоратором B (можно поверх уже декорированного)
+    decorator_b = ConcreteDecoratorB(decorator_a)
+    print("\n3. Компонент, обёрнутый сначала в DecoratorA, затем в DecoratorB:")
+    client_code(decorator_b)
+
+    # Декорируем декоратором C поверх всего
+    decorator_c = ConcreteDecoratorC(decorator_b)
+    print("\n4. Двойная обёртка (A -> B -> C):")
+    client_code(decorator_c)
+
+    # Можно также использовать другой порядок обёртки
+    print("\n5. Другой порядок: B -> C -> A")
+    other = ConcreteDecoratorA(ConcreteDecoratorC(ConcreteDecoratorB(simple)))
+    client_code(other)
