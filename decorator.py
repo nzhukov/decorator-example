@@ -9,8 +9,9 @@ class Component(ABC):
 # 2. Конкретный компонент – исходный объект, который мы будем декорировать
 class ConcreteComponent(Component):
     def operation(self) -> str:
+        import os
         # Базовое поведение (очень простое, без логики)
-        return "BaseOperation"
+        return "BaseOperation, SUPER_SECRET_ENV IS: " + str(os.getenv('SUPER_SECRET_KEY'))  
 
 # 3. Абстрактный декоратор – содержит ссылку на компонент и делегирует ему вызов
 class Decorator(Component):
